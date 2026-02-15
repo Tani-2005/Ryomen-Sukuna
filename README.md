@@ -20,7 +20,7 @@ Use your hand to command the Cursed Energy. The system detects specific gestures
 
 | Technique | Hand Gesture | Visual Effect |
 | --- | --- | --- |
-| **Malevolent Shrine** | ✊ **Fist / Prayer** (All fingers closed) | Constructs the 4-pillar Shinto shrine with a spectral maw. |
+| **Malevolent Shrine** | ✊ **Fist under chin** (fingers can be partially open ) | Constructs the 4-pillar Shinto shrine with a spectral maw. |
 | **Dismantle** | ✋ **Open Hand** (All fingers extended) | High-speed, horizontal slashing planes. |
 | **Cleave** | ✌️ **Two Fingers** (Index + Middle up) | A chaotic, spiderweb-like cutting grid. |
 | **Kamino (Fuga)** | 👌 **Pinch** (Index + Thumb touching) | Generates a dense fireball and rising flame tornado. |
