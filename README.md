@@ -1,6 +1,6 @@
 # ⛩️ DOMAIN EXPANSION: Ryomen-Sukuna
 
-> **"Know your place, fool."**
+**"Know your place, fool."**
 ![6e226351c4248783f3bafd8b7275e223](https://github.com/user-attachments/assets/0ecd94c1-ca1a-4dd2-9e7f-6c6711281001)
 
 A high-performance, interactive web visualizer that uses computer vision to render Ryomen Sukuna's cursed techniques in real-time. Built with **Three.js** for 3D particle systems and **MediaPipe** for hand tracking.
