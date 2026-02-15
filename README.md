@@ -1,5 +1,4 @@
-# Ryomen-Sukuna
-# ⛩️ DOMAIN EXPANSION: MALEVOLENT SHRINE
+# ⛩️ DOMAIN EXPANSION: Ryomen-Sukuna
 
 > **"Know your place, fool."**
 
@@ -18,7 +17,7 @@ The simulation features:
 ## 🖐️ Controls & Techniques
 
 Use your hand to command the Cursed Energy. The system detects specific gestures to trigger different states:
-```
+
 | Technique | Hand Gesture | Visual Effect |
 | --- | --- | --- |
 | **Malevolent Shrine** | ✊ **Fist / Prayer** (All fingers closed) | Constructs the 4-pillar Shinto shrine with a spectral maw. |
@@ -26,7 +25,7 @@ Use your hand to command the Cursed Energy. The system detects specific gestures
 | **Cleave** | ✌️ **Two Fingers** (Index + Middle up) | A chaotic, spiderweb-like cutting grid. |
 | **Kamino (Fuga)** | 👌 **Pinch** (Index + Thumb touching) | Generates a dense fireball and rising flame tornado. |
 | **Neutral** | **Relaxed / None** | Particles drift as ambient cursed dust. |
-```
+
 
 ## 🚀 How to Run
 
