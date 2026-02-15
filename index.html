@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJK: Ryomen Sukuna</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000000; font-family: 'Courier New', sans-serif; }
+    
+        #ui {
+            position: absolute;
+            top: 5%;
+            width: 100%;
+            text-align: center;
+            color: #d22;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        h1 { 
+            font-size: 4rem; margin: 0; letter-spacing: 15px; 
+            font-weight: 900; 
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            background: linear-gradient(to bottom, #fff, #900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        #technique-name { 
+            font-size: 1.5rem; color: #ff3333; margin-top: 10px; 
+            font-weight: bold; letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+        #video-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 320px;
+            height: 240px; 
+            border: 2px solid rgba(255, 0, 0, 0.4);
+            z-index: 20;
+            background-color: #000; 
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(100,0,0,0.5);
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transform: scaleX(-1); }
+    </style>
+    
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <div id="ui">
+        <h1>両面宿儺</h1>
+        <div id="technique-name">CURSED TECHNIQUE</div>
+    </div>
+
+    <div id="video-container">
+        <video class="input_video"></video>
+    </div>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    // --- 1. Scene Setup ---
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.012); 
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 50;
+    camera.position.y = 5;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    // OPTIMIZATION: Cap Pixel Ratio at 1 to prevent lag on Retina/4K screens
+    renderer.setPixelRatio(1); 
+    renderer.setClearColor(0x000000, 1);
+    document.body.appendChild(renderer.domElement);
+
+    // --- 2. Post-Processing ---
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    
+    // OPTIMIZATION: Half-resolution bloom for performance
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), 2.5, 0.5, 0.1);
+    composer.addPass(bloomPass);
+
+    // --- 3. The Particle System ---
+    // OPTIMIZATION: Reduced count slightly to 15,000 for smoother FPS
+    const COUNT = 15000; 
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(COUNT * 3);
+    const colors = new Float32Array(COUNT * 3);
+    const sizes = new Float32Array(COUNT);
+    
+    const targetPositions = new Float32Array(COUNT * 3);
+    const targetColors = new Float32Array(COUNT * 3);
+    const targetSizes = new Float32Array(COUNT);
+
+    // Init Logic
+    for(let i=0; i<COUNT*3; i++) {
+        positions[i] = (Math.random()-0.5) * 150;
+        colors[i] = 0;
+    }
+    for(let i=0; i<COUNT; i++) sizes[i] = 0.5;
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    const material = new THREE.PointsMaterial({ 
+        size: 0.4, // Slightly larger to compensate for count
+        vertexColors: true, 
+        blending: THREE.AdditiveBlending, 
+        transparent: true, 
+        depthWrite: false 
+    });
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    // --- 4. SUKUNA MATH FUNCTIONS ---
+
+    // A. DISMANTLE (Original 3-Layer Slash)
+    function getDismantle(i) {
+        const width = 80;
+        const x = (Math.random() - 0.5) * width;
+        const layer = i % 3; 
+        const y = (Math.random() - 0.5) * 2 + (layer * 5); 
+        const z = (Math.random() - 0.5) * 5;
+        return { x: x, y: y, z: z, r: 0.8, g: 0.9, b: 1.0, s: 2.0 };
+    }
+
+    // B. CLEAVE (Standard Grid)
+    function getCleave(i) {
+        const r = Math.random() * 35;
+        const theta = Math.random() * Math.PI * 2;
+        const snap = 6; 
+        const x = Math.round((r * Math.cos(theta)) / snap) * snap;
+        const y = Math.round((r * Math.sin(theta)) / snap) * snap;
+        return { x: x, y: y, z: (Math.random()-0.5)*5, r: 0.9, g: 0.1, b: 0.1, s: 1.2 };
+    }
+
+    // C. FUGA (Original Fire Arrow)
+    function getFuga(i) {
+        if (i < COUNT * 0.2) {
+            const r = Math.random() * 4;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            return { x: r * Math.sin(phi) * Math.cos(theta), y: r * Math.sin(phi) * Math.sin(theta) + 5, z: r * Math.cos(phi), r: 1.0, g: 0.5, b: 0.0, s: 3.0 };
+        } else {
+            const r = Math.random() * 15;
+            const h = Math.random() * 40;
+            const theta = Math.random() * Math.PI * 2;
+            return { x: r * Math.cos(theta) * (1 - h/50), y: h - 10, z: r * Math.sin(theta) * (1 - h/50), r: 1.0, g: 0.1, b: 0.0, s: 1.0 };
+        }
+    }
+
+    // D. MALEVOLENT SHRINE (Detailed Shinto Architecture)
+    function getShrine(i) {
+        const total = COUNT;
+        const ratio = i / total;
+        
+        // 1. THE MAW (The Blue Spectral Center)
+        if (ratio < 0.15) {
+            const angle = Math.PI + (Math.random() * Math.PI); 
+            const rBase = 12;
+            const jitter = Math.sin(angle * 25) * 1.5; 
+            const r = rBase + jitter + (Math.random() * 3);
+            const x = r * Math.cos(angle);
+            const y = r * Math.sin(angle) * 0.8 - 8;
+            const z = -5 + (Math.random()*4);
+            return { x: x, y: y, z: z, r: 0.0, g: 0.8, b: 1.0, s: 1.8 };
+        }
+        // 2. THE PILLARS
+        else if (ratio < 0.30) {
+            const pillarIndex = i % 4;
+            const xSign = (pillarIndex < 2) ? 1 : -1;
+            const zSign = (pillarIndex % 2 === 0) ? 1 : -1;
+            const px = xSign * 18; 
+            const pz = zSign * 12;
+            const h = Math.random() * 35;
+            const w = (Math.random() - 0.5) * 3;
+            return { x: px + w, y: -20 + h, z: pz + w, r: 0.8, g: 0.05, b: 0.05, s: 1.5 };
+        }
+        // 3. THE ROOF 
+        else if (ratio < 0.70) {
+            const tier = (Math.random() > 0.6) ? 1 : 0; 
+            const wBase = (tier === 0) ? 50 : 35;
+            const yBase = (tier === 0) ? 15 : 28;
+            const zDepth = (tier === 0) ? 25 : 15;
+            const u = (Math.random() - 0.5) * 2;
+            const v = (Math.random() - 0.5) * 2;
+            const curve = (u*u) * 6 + (v*v) * 2; 
+            const x = u * wBase;
+            const z = v * zDepth;
+            const y = yBase - curve + (Math.random() * 2);
+            const isEdge = Math.abs(u) > 0.9 || Math.abs(v) > 0.9;
+            const r = 0.7; const g = isEdge ? 0.4 : 0.0; const b = 0.0;
+            return { x: x, y: y, z: z, r: r, g: g, b: b, s: 1.2 };
+        }
+        // 4. THE BASE
+        else {
+            const theta = Math.random() * Math.PI * 2;
+            const r = Math.random() * 40;
+            const h = Math.random() * 10;
+            const x = r * Math.cos(theta);
+            const z = r * Math.sin(theta);
+            const y = -20 + h - (r*0.3);
+            return { x: x, y: y, z: z, r: 0.4, g: 0.4, b: 0.45, s: 1.0 };
+        }
+    }
+
+    // --- 5. MediaPipe Hand Logic (THROTTLED) ---
+    let currentTech = 'neutral';
+    const videoElement = document.querySelector('.input_video');
+    const nameEl = document.getElementById('technique-name');
+    let frameCounter = 0; // To throttle AI
+
+    const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+    hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.5 }); // Lower complexity for speed
+
+    hands.onResults((results) => {
+        let detected = 'neutral';
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            const lm = results.multiHandLandmarks[0];
+            const isUp = (tip, pip) => lm[tip].y < lm[pip].y;
+            
+            const pinch = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y);
+            const allOpen = isUp(8,6) && isUp(12,10) && isUp(16,14) && isUp(20,18);
+            const twoFingers = isUp(8,6) && isUp(12,10) && !isUp(16,14) && !isUp(20,18);
+            const fist = !isUp(8,6) && !isUp(12,10) && !isUp(16,14) && !isUp(20,18);
+
+            if (pinch < 0.05) detected = 'fuga';
+            else if (twoFingers) detected = 'cleave';
+            else if (allOpen) detected = 'dismantle';
+            else if (fist) detected = 'shrine';
+        }
+        updateState(detected);
+    });
+
+    function updateState(tech) {
+        if(currentTech === tech) return;
+        currentTech = tech;
+
+        if(tech === 'shrine') { nameEl.innerText = "DOMAIN EXPANSION: MALEVOLENT SHRINE"; bloomPass.strength = 2.8; }
+        else if(tech === 'fuga') { nameEl.innerText = "OPEN: FUGA"; bloomPass.strength = 3.2; }
+        else if(tech === 'dismantle') { nameEl.innerText = "TECHNIQUE: DISMANTLE"; bloomPass.strength = 1.5; }
+        else if(tech === 'cleave') { nameEl.innerText = "TECHNIQUE: CLEAVE"; bloomPass.strength = 1.5; }
+        else { nameEl.innerText = "NEUTRAL"; bloomPass.strength = 0.8; }
+
+        for(let i=0; i<COUNT; i++) {
+            let p;
+            if(tech === 'neutral') {
+                const r = 40 + Math.random()*20; const t = Math.random()*6.28; const ph = Math.random()*3.14;
+                p = { x: r*Math.sin(ph)*Math.cos(t), y: r*Math.sin(ph)*Math.sin(t), z: r*Math.cos(ph), r: 0.2, g: 0.0, b: 0.0, s: 0.5 };
+            }
+            else if(tech === 'dismantle') p = getDismantle(i);
+            else if(tech === 'cleave') p = getCleave(i);
+            else if(tech === 'fuga') p = getFuga(i);
+            else if(tech === 'shrine') p = getShrine(i);
+            
+            targetPositions[i*3] = p.x; targetPositions[i*3+1] = p.y; targetPositions[i*3+2] = p.z;
+            targetColors[i*3] = p.r; targetColors[i*3+1] = p.g; targetColors[i*3+2] = p.b;
+            targetSizes[i] = p.s;
+        }
+    }
+
+    const cameraUtils = new Camera(videoElement, {
+        onFrame: async () => { 
+            // OPTIMIZATION: Only send frame to AI every 5th frame
+            frameCounter++;
+            if (frameCounter % 5 === 0) {
+                await hands.send({image: videoElement}); 
+            }
+        },
+        width: 640, height: 480
+    });
+    cameraUtils.start();
+
+    // --- 6. Animation Loop ---
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        const pos = particles.geometry.attributes.position.array;
+        const col = particles.geometry.attributes.color.array;
+        const siz = particles.geometry.attributes.size.array;
+
+        const lerpFactor = (currentTech === 'dismantle') ? 0.3 : 0.08; 
+
+        // OPTIMIZATION: Simplified math inside loop
+        for(let i=0; i<COUNT; i++) {
+            const i3 = i*3;
+            // Unrolled lerp for slight speedup
+            const diffX = targetPositions[i3] - pos[i3];
+            const diffY = targetPositions[i3+1] - pos[i3+1];
+            const diffZ = targetPositions[i3+2] - pos[i3+2];
+
+            // Only update if distance is significant (Micro-optimization)
+            if (Math.abs(diffX) > 0.01) pos[i3] += diffX * lerpFactor;
+            if (Math.abs(diffY) > 0.01) pos[i3+1] += diffY * lerpFactor;
+            if (Math.abs(diffZ) > 0.01) pos[i3+2] += diffZ * lerpFactor;
+
+            col[i3]   += (targetColors[i3]   - col[i3])   * 0.05;
+            col[i3+1] += (targetColors[i3+1] - col[i3+1]) * 0.05;
+            col[i3+2] += (targetColors[i3+2] - col[i3+2]) * 0.05;
+
+            siz[i]    += (targetSizes[i]     - siz[i])    * 0.1;
+        }
+
+        particles.geometry.attributes.position.needsUpdate = true;
+        particles.geometry.attributes.color.needsUpdate = true;
+        particles.geometry.attributes.size.needsUpdate = true;
+        
+        if(currentTech === 'fuga') {
+            particles.rotation.y += 0.05; 
+        } else if (currentTech === 'shrine') {
+            particles.rotation.set(0, 0, 0); 
+            const time = Date.now() * 0.002;
+            bloomPass.strength = 2.8 + Math.sin(time) * 0.3;
+        } else {
+            particles.rotation.y += 0.001; 
+        }
+
+        composer.render();
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // Optimization: Keep pixel ratio at 1 on resize
+        renderer.setPixelRatio(1);
+        composer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>
